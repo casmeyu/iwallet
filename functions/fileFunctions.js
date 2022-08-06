@@ -31,7 +31,7 @@ export async function _storeData(key, value) {
     console.log(`saving ${value}`)
     try {
         await AsyncStorage.setItem(key, value);
-        const saved = _retrieveData('passwordHash')
+        const saved = await _retrieveData('passwordHash')
         console.log('saved value')
         console.log(saved)
         return (value);

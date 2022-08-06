@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import { _retrieveData, _storeData } from '../functions/fileFunctions';
 
 const WalletCreation = (props) => {
@@ -9,6 +9,28 @@ const WalletCreation = (props) => {
     const [wallet, setWallet] = useState(null)
 
     const [showMnemonic, setShowMnemonic] = useState(false)
+
+    const styles = StyleSheet.create({
+        textInput: {
+            textAlign: 'center',
+            margin: '1rem',
+            padding: '.7rem',
+            width: '60%',
+            backgroundColor: '#FFFFFF',
+            borderStyle: 'solid',
+            borderWidth: '2px',
+            borderColor: '#CCCCCC',
+            borderRadius: '50px',
+            fontSize: 'large'
+        },
+        greeting: {
+            margin: '.8rem',
+            fontSize: '32px',
+            color: 'white',
+            maxWidth: '50%',
+            textAlign: 'center'
+        }
+    })
 
     const handleWalletCreation = () => {
         const newWallet = ethers.Wallet.createRandom()
@@ -19,17 +41,11 @@ const WalletCreation = (props) => {
         console.log('***handleFinish***')
         const encryptedWallet = await wallet.encrypt(password)
         
-        console.log('encryptedwallet')
-        console.log(encryptedWallet)
-        let wallets = await _retrieveData('wallets')
-        wallets.push(wallet.address)
-        _storeData('wallets', wallets)
         const passwordHash = crypto.createHash('sha256').update(password).digest('hex')
         _storeData('passwordHash', passwordHash)
-        _storeData(wallet.address, encryptedWallet)
+        _storeData('cryptoWallet', encryptedWallet)
         //_storeData('cryptoWallet', encryptedWallet)
         setUserExist(true)
-        handleLogged(true)
         /*try {
             console.log('json decrypted wallet')
             console.log(password)
@@ -48,12 +64,16 @@ const WalletCreation = (props) => {
     }, [])
 
     return (
-        <View>
+        <View style={{width:'90%', justifyContent:'center', alignItems:'center'}}>
             
-            { wallet ? <Text>{wallet.address}</Text> : null }
-
-            { showMnemonic ? <Text>{wallet._mnemonic().phrase}</Text> : null }
-            { showMnemonic ? <Text>Save this info mf</Text> : null }
+            { wallet ? <Text style={styles.greeting}>{wallet.address}</Text> : null }
+            { showMnemonic &&
+                <View style={{width:'100%', justifyContent:'center', alignItems:'center', borderColor:"#CCCCCC", borderWidth:'2px', borderRadius:'25px'}}>
+                    <Text style={styles.greeting}>{wallet._mnemonic().phrase}</Text>
+                </View>
+            }
+            { showMnemonic && <Text style={styles.greeting}>Save this phrase with you life</Text> }
+            
             { wallet && !showMnemonic ? <Button title="Show Mnemonic" onPress={() => setShowMnemonic(true)} /> : null }
             { wallet ? <Button title='Continue' onPress={() => handleFinish()} /> : null }
         </View>
@@ -69,6 +89,26 @@ const PasswordCreation = (props) => {
     const [pass2, setPass2] = useState('')
     const [hash, setHash] = useState(null)
         
+    const styles = StyleSheet.create({
+        textInput: {
+            textAlign: 'center',
+            margin: '1rem',
+            padding: '.7rem',
+            width: '60%',
+            backgroundColor: '#FFFFFF',
+            borderStyle: 'solid',
+            borderWidth: '2px',
+            borderColor: '#CCCCCC',
+            borderRadius: '50px',
+            fontSize: 'large'
+        },
+        greeting: {
+            margin: '.8rem',
+            fontSize: '32px',
+            color: 'white',
+        }
+    })
+
     const handleConfirm = () => {
         console.log('checking passwords')
         console.log(pass1)
@@ -82,17 +122,21 @@ const PasswordCreation = (props) => {
     }
 
     return (
-        <View>
+        <View style={{alignItems:'center'}}>
             <TextInput
+                style={styles.textInput}
                 placeholder='password'
                 onChangeText={newText => {console.log('changing pass1');setPass1(newText)}}
                 defaultValue={pass1}
+                secureTextEntry={true}
                 editable
             />
             <TextInput
+                style={styles.textInput}
                 placeholder='password confirmation'
                 onChangeText={newText => {console.log('changing pass2');setPass2(newText)}}
                 defaultValue={pass2}
+                secureTextEntry={true}
                 editable
             />
             <Button title="Confirm" onPress={() => handleConfirm()} />
@@ -104,13 +148,25 @@ const CreateWallet = (props) => {
     const { handleLogged, setUserExist } = props
     const [display, setDisplay] = useState('passwordCreation')
     const [password, setPassword] = useState(null)
+    const styles = StyleSheet.create({
+        greeting: {
+            margin: '.8rem',
+            fontSize: '32px',
+            color: 'white',
+        }
+    })
+
     return (
-        <View>
-            <Text>Create Wallet</Text>
+        <View style={{alignItems:'center'}}>
+            <Text style={styles.greeting}>Create Wallet</Text>
             { display == 'passwordCreation' ? <PasswordCreation setCreateWalletDisplay={setDisplay} setPassword={setPassword} /> : null }
             { display == 'walletCreation' ? <WalletCreation setCreateWalletDisplay={setDisplay} handleLogged={handleLogged} setUserExist={setUserExist} password={password}/> : null }
         </View>
     )
+
+
 }
+
+
 
 export default CreateWallet;
