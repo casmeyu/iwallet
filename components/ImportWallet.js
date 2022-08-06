@@ -3,7 +3,7 @@ import { View, Text, Button } from 'react-native';
 const ImportWallet = (props) => {
     return (
         <View>
-            <Text>Create Wallet</Text>
+            <Text>Import Wallet</Text>
         </View>
     )
 }

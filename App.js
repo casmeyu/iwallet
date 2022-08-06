@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, Button, View } from 'react-native';
+import { StyleSheet, Text, Button, View} from 'react-native';
 import { _retrieveData, _removeData, _storeData } from './functions/fileFunctions';
 import Home from './pages/Home';
 import NewUser from './components/NewUser';
@@ -18,7 +18,13 @@ export default function App() {
 
   const deleteWallets = async () => {
     console.log('removing wallets')
-    const deleted = await _removeData('passwordHash')
+    let deleted = false
+    try {
+      await _removeData('passwordHash')
+      await _removeData('cryptoWallet')
+    } catch(ex) {
+      console.log(ex)
+    }
     if (deleted) {
       console.log('removed credentials')
       setUserExist(false)

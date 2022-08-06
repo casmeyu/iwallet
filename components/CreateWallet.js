@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import { _storeData } from '../functions/fileFunctions';
+import { _retrieveData, _storeData } from '../functions/fileFunctions';
 
 const WalletCreation = (props) => {
     const { password, setUserExist, handleLogged } = props
@@ -18,11 +18,16 @@ const WalletCreation = (props) => {
     const handleFinish = async () => {
         console.log('***handleFinish***')
         const encryptedWallet = await wallet.encrypt(password)
-        console.log('encrypted wallet')
+        
+        console.log('encryptedwallet')
         console.log(encryptedWallet)
+        let wallets = await _retrieveData('wallets')
+        wallets.push(wallet.address)
+        _storeData('wallets', wallets)
         const passwordHash = crypto.createHash('sha256').update(password).digest('hex')
         _storeData('passwordHash', passwordHash)
-        _storeData('cryptoWallet', encryptedWallet)
+        _storeData(wallet.address, encryptedWallet)
+        //_storeData('cryptoWallet', encryptedWallet)
         setUserExist(true)
         handleLogged(true)
         /*try {

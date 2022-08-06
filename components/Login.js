@@ -9,7 +9,7 @@ import { TouchableHighlight } from 'react-native-web';
 const Login = (props) => {
     const { handleLogged, setCurrentWallet } = props
     const [password, setPassword] = useState('');
-
+    const [error, setError] = useState('')
     
     const handleLogin = async () => {
         console.log('***handle login***')
@@ -17,7 +17,12 @@ const Login = (props) => {
 
         const hashCheck = await _retrieveData('passwordHash')
         if (hash == hashCheck) {
+            setError('logging...')
             console.log('password matched')
+            const wallets = await _retrieveData('wallets')
+            console.log('wallets at login')
+            console.log(wallets)
+            
             const cwallet = await _retrieveData('cryptoWallet')
             console.log('got crypto wallet from storage')
             console.log(`current wallet retrieved ${cwallet}`)
@@ -28,6 +33,7 @@ const Login = (props) => {
             handleLogged(true)
         } else {
             console.log('pasword did not match')
+            setError('password did not match')
         }
     }
 
@@ -41,7 +47,7 @@ const Login = (props) => {
             secureTextEntry={true}
             editable
         />
-
+        <Text style={{color:'white'}}>{error}</Text>
         <Button text='Login' f={handleLogin} styles={{button: styles.button, buttonText: styles.buttonText}} />
 
       </View>
