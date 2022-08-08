@@ -1,15 +1,11 @@
 import crypto from 'crypto';
 import { _retrieveData } from '../functions/fileFunctions';
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { useState, useEffect } from "react";
 import RNPickerSelect from "react-native-picker-select";
-import { StyleSheet, ScrollView, View, Text, Button, Alert } from "react-native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { formatEther, formatUnits, hexlify, parseEther, parseUnits } from "ethers/lib/utils";
+import { StyleSheet, View, Text, Button } from "react-native";
+import { formatEther, formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { TextInput } from "react-native-web";
-
-const Tab = createMaterialTopTabNavigator();
-
 
 const ExportPK = (props) => {
     const { connectedWallet, setHomeDisplay } = props
@@ -104,23 +100,38 @@ const NewTransaction = (props) => {
 
             const signer = new ethers.Wallet(connectedWallet.privateKey, provider)
             console.log("sending transaction...")
-            signer.sendTransaction(tx).then((transaction) => {
-                console.dir(transaction)
-                alert("Finished transaction!")
-                setTransactionDisplay(null)
-              })
+            console.log(signer)
+            console.log(tx)
+            signer.sendTransaction(tx)
+                .then(transaction => {
+                    console.dir(transaction)
+                    alert("Finished transaction!\nThis could take a few minutes depending on the avaiability of the nodes")
+                    setTransactionDisplay(null)
+                    
+                  })
+                  .catch(err => {
+
+                    err = err.toString().split("ody=\"")[1].split(", requestB")[0].split(", error")[0]
+                    /*
+                    err.replace(/\n/g, "")
+                    err.replace(/message/g, "alo alo")
+                    err.replace(/\\/, ""0)
+                    */
+                    console.log('ERROR:')
+                    console.log(err)
+                    alert(err)
+                    setTx({
+                        from: connectedWallet.address,
+                        to: "",
+                        value: "",
+                        gasLimit: "",
+                        gasPrice: ""
+                    })
+                    avrgGas()
+                    return
+                  })
         } catch (ex) {
-            console.log('ERROR:')
-            console.log(ex)
-            setTx({
-                from: connectedWallet.address,
-                to: "",
-                value: "",
-                gasLimit: "",
-                gasPrice: ""
-            })
-            avrgGas()
-            return
+            console.log(`EROR: ${ex}`)
         }
         
     }
