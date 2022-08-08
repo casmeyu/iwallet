@@ -12,9 +12,7 @@ export default function App() {
   const [userExist, setUserExist] = useState(false);
   const [logged, setLogged] = useState(false);
   
-  const [passwordhash, setPasswordHash] = useState(null);
   const [currentWallet, setCurrentWallet] = useState(null);
-  const [wallets, setWallets] = useState(null);
 
   const deleteWallets = async () => {
     console.log('removing wallets')
@@ -35,11 +33,29 @@ export default function App() {
     return (false)
   }
 
-  const handleLogged = (value) => {
-    setLogged(value)
+  const autoLogoff = () => {
     setTimeout(() => {
-      logged ? setLogged(false) : null
-    }, 5 * 60 * 1000)
+      console.log('loggin off...?')
+      console.log(logged)
+      if (logged) {
+        console.log('loggin off')
+        setCurrentWallet(null)
+        setLogged(false)
+      }
+    }, 5 * 1000)
+  }
+
+  const handleLogged = async (value) => {
+    setLogged(value)
+    console.log('loggin in setting 30 secs')
+    setTimeout(() => {
+      console.log('loggin off...?')
+      if (value) {
+        console.log('loggin off')
+        setCurrentWallet(null)
+        setLogged(false)
+      }
+    }, 3 * 60 * 1000)
   }
 
   useEffect(async () => {
@@ -50,7 +66,7 @@ export default function App() {
     <View style={styles.container}>
       { userExist && !logged ? <Login handleLogged={handleLogged} setCurrentWallet={setCurrentWallet} /> : null}
       { !userExist ? <NewUser handleLogged={handleLogged} setUserExist={setUserExist} setCurrentWallet={setCurrentWallet} /> : null }
-      { logged ? <Home currentWallet={currentWallet} wallets={wallets} setCurrentWallet={setCurrentWallet} setWallets={setWallets} handleLogged={handleLogged} deleteWallets={deleteWallets} /> : null }
+      { logged ? <Home currentWallet={currentWallet} setCurrentWallet={setCurrentWallet} handleLogged={handleLogged} deleteWallets={deleteWallets} /> : null }
       <StatusBar style="auto" />
     </View>
   );
